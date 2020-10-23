@@ -3,12 +3,12 @@ from typing import DefaultDict, List, Deque, Tuple
 
 
 def dfs(
-        graph: DefaultDict[str, List],
-        initial: str,
-        marks: DefaultDict[str, int],
+        graph: DefaultDict[int, List],
+        initial: int,
+        marks: DefaultDict[int, int],
         order: Deque = None,
         component: int = -1
-       ) -> Tuple[Deque, DefaultDict[str, int]]:
+       ) -> Tuple[Deque, DefaultDict[int, int]]:
     """
 
     :param graph:
@@ -34,7 +34,7 @@ def dfs(
     return order, marks
 
 
-def transpose(graph: DefaultDict[str, List]) -> DefaultDict[str, List]:
+def transpose(graph: DefaultDict[int, List]) -> DefaultDict[int, List]:
     """
 
     :param graph:
@@ -47,7 +47,7 @@ def transpose(graph: DefaultDict[str, List]) -> DefaultDict[str, List]:
     return transposed_graph
 
 
-def find_components(graph: DefaultDict[str, List]) -> DefaultDict[str, int]:
+def find_components(graph: DefaultDict[int, List]) -> DefaultDict[int, int]:
     """
 
     :param graph:

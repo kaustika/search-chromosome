@@ -14,5 +14,5 @@ def read_graph_from_file(file_name):
             if line.startswith("#"):
                 continue
             x, *y = line.split()
-            adj_list[x] = y
+            adj_list[int(x)] = [int(v) for v in y]
     return adj_list
