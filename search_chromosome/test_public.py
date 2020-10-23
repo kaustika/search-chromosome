@@ -1,4 +1,3 @@
 import pytest
 
-from .search_chromosome import search_chromosome
-
+from .search_chr import search_chromosome

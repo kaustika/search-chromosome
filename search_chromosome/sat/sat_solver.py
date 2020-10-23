@@ -4,12 +4,20 @@ from search_chromosome.sat.components import find_components, dfs
 
 
 class Input:
+    """
+
+    """
     def __init__(self):
         self.variables = []
         self.variable_table = dict()
         self.clauses = []
 
     def parse_and_add_clause(self, line):
+        """
+
+        :param line:
+        :return:
+        """
         clause = []
         for literal in line.split():
             negated = 1 if literal.startswith('!') else 0
@@ -23,6 +31,11 @@ class Input:
 
     @classmethod
     def from_file(cls, file):
+        """
+
+        :param file:
+        :return:
+        """
         instance = cls()
         for line in file:
             line = line.strip()
@@ -31,19 +44,39 @@ class Input:
         return instance
 
     def literal_to_string(self, literal):
+        """
+
+        :param literal:
+        :return:
+        """
         s = '!' if literal & 1 else ''
         return s + self.variables[literal >> 1]
 
 
 def negate(x):
+    """
+
+    :param x:
+    :return:
+    """
     return x ^ 1
 
 
 def is_negated(x) -> bool:
+    """
+
+    :param x:
+    :return:
+    """
     return not (x & 1 == 0)
 
 
 def graph_by_clauses(clauses: List[Tuple[int, int]]) -> DefaultDict[int, List]:
+    """
+
+    :param clauses:
+    :return:
+    """
     graph = defaultdict(list)
     for clause in clauses:
         x, y = clause  # encoded literals
@@ -55,6 +88,11 @@ def graph_by_clauses(clauses: List[Tuple[int, int]]) -> DefaultDict[int, List]:
 
 
 def nodes_in_components(components: DefaultDict[int, int]) -> DefaultDict[int, List]:
+    """
+
+    :param components:
+    :return:
+    """
     content = defaultdict(list)
     for node, comp in components.items():
         content[comp].append(node)
@@ -65,6 +103,12 @@ def components_to_condensate(
         graph: DefaultDict[int, List],
         components: DefaultDict[int, int]
 ) -> Tuple[DefaultDict[int, List], DefaultDict[int, List]]:
+    """
+
+    :param graph:
+    :param components:
+    :return:
+    """
     content = nodes_in_components(components)
     condensate = defaultdict(list)
     for comp in content.keys():
@@ -75,6 +119,11 @@ def components_to_condensate(
 
 
 def solve_2_sat(formula: Input) -> Dict[str, bool]:
+    """
+
+    :param formula:
+    :return:
+    """
     top_order = deque()
     visited = defaultdict(int)
     answer, val_values = dict(), dict()
@@ -95,14 +144,3 @@ def solve_2_sat(formula: Input) -> Dict[str, bool]:
         if not is_negated(node):  # not negated literals go to the answer
             val_values[formula.literal_to_string(node)] = answer[node]
     return val_values
-
-
-if __name__ == "__main__":
-    f = Input()
-    f.parse_and_add_clause("x1 !x2")
-    f.parse_and_add_clause("x3 !x4")
-    # print(f.variables)       # ['x1', 'x2', 'x3', 'x4']
-    # print(f.variable_table)  # {'x1': 0, 'x2': 1, 'x3': 2, 'x4': 3}
-    # print(f.clauses)         # [(0, 3), (4, 7)]
-
-    print(solve_2_sat(f))
