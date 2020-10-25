@@ -1,7 +1,8 @@
-from typing import Dict
 import pytest
+from typing import Dict
 
 from search_chromosome.sat.sat_solver import solve_2_sat, Input, NoSolution
+from search_chromosome.sat.test.util import abspath
 
 
 class Case:
@@ -22,13 +23,28 @@ TEST_CASES = [
     ),
     Case(
         name='formula_trivial',
-        formula=Input().from_file("trivial.txt"),
+        formula=Input().from_file(abspath("trivial.txt", __file__)),
         var_values={'x1': True}
     ),
     Case(
         name='formula_basic',
-        formula=Input().from_file("basic.txt"),
+        formula=Input().from_file(abspath("basic.txt", __file__)),
         var_values={'x1': True, 'x2': True, 'x3': True, 'x4': True}
+    ),
+    Case(
+        name='formula_1',
+        formula=Input().from_file(abspath("sat_case1.txt", __file__)),
+        var_values={'a': False, 'b': False, 'c': False}
+    ),
+    Case(
+        name='formula_2',
+        formula=Input().from_file(abspath("sat_case2.txt", __file__)),
+        var_values={'x': True, 'y': True, 'z': True}
+    ),
+    Case(
+        name='formula_3',
+        formula=Input().from_file(abspath("sat_case3.txt", __file__)),
+        var_values={'a': True, 'b': False, 'c': False}
     )
 ]
 
@@ -41,4 +57,4 @@ def test_two_sat_solver(case: Case) -> None:
 
 def test_no_solution() -> None:
     with pytest.raises(NoSolution):
-        solve_2_sat(Input().from_file("no_solution.txt"))
+        solve_2_sat(Input().from_file(abspath("no_solution.txt", __file__)))

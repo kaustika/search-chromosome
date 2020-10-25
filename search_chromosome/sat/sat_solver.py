@@ -22,7 +22,7 @@ class NoSolution(TwoSatException):
 
 class Input:
     """
-
+    Conjunctive normal form formula representation.
     """
     def __init__(self):
         self.variables = []
@@ -31,9 +31,10 @@ class Input:
 
     def parse_and_add_clause(self, line):
         """
+        Parse conjunct from line and add its clause to the formula.
 
-        :param line:
-        :return:
+        :param line: line to be parsed;
+        :return: -
         """
         clause = list()
         for literal in line.split():
@@ -49,9 +50,12 @@ class Input:
     @classmethod
     def from_file(cls, file):
         """
+        Parse conjuncts from each line of file and
+        add its clause to the formula.
+        One line - one conjunct with two variables.
 
-        :param file:
-        :return:
+        :param file: path to file;
+        :return: -
         """
         instance = cls()
         with open(file) as f:
@@ -63,37 +67,42 @@ class Input:
 
     def literal_to_string(self, literal):
         """
+        Transform literal to its string form.
 
-        :param literal:
-        :return:
+        Looking up the variable in a literal is a matter of dividing by two,
+        which is the same as a bit-wise shift to the right.
         """
-        s = '!' if literal & 1 else ''
+        s = '!' if is_negated(literal) else ''
         return s + self.variables[literal >> 1]
 
 
 def negate(x):
     """
+    Switches a literal from negated to unnegated and back by
+    doing a bit-wise XOR with the number one.
 
-    :param x:
-    :return:
+    :param x: literal;
+    :return: !x.
     """
     return x ^ 1
 
 
 def is_negated(x) -> bool:
     """
+    Checks if a literal is negated or not by doing a bit-wise AND with 1.
 
-    :param x:
-    :return:
+    :param x: literal;
+    :return: True if negated, else False.
     """
     return not (x & 1 == 0)
 
 
 def graph_by_clauses(clauses: List[Tuple[int, int]]) -> DefaultDict[int, List]:
     """
+    Builds adj. list represented implication graph from clauses of the CNF.
 
-    :param clauses:
-    :return:
+    :param clauses: clauses of the formula;
+    :return: implication graph.
     """
     graph = defaultdict(list)
     for clause in clauses:
@@ -105,11 +114,15 @@ def graph_by_clauses(clauses: List[Tuple[int, int]]) -> DefaultDict[int, List]:
     return graph
 
 
-def nodes_in_components(components: DefaultDict[int, int]) -> DefaultDict[int, List]:
+def nodes_in_components(
+        components: DefaultDict[int, int]
+) -> DefaultDict[int, List]:
     """
+    Forms a dict where for each component's number we
+    have all the vertices in it.
 
-    :param components:
-    :return:
+    :param components: dict{vertex: number of its component};
+    :return: dict{component number: [vertices inside component]}.
     """
     content = defaultdict(list)
     for node, comp in components.items():
@@ -122,10 +135,11 @@ def components_to_condensate(
         components: DefaultDict[int, int]
 ) -> Tuple[DefaultDict[int, List], DefaultDict[int, List]]:
     """
+    Build condensate of the given implication graph.
 
-    :param graph:
-    :param components:
-    :return:
+    :param graph: implication graph adj. list represented;
+    :param components: components: dict{vertex: number of its component};
+    :return: condensate graph.
     """
     content = nodes_in_components(components)
     condensate = defaultdict(list)
@@ -138,9 +152,11 @@ def components_to_condensate(
 
 def solve_2_sat(formula: Input) -> Dict[str, bool]:
     """
+    Resolves 2-SAT problem
+    (if no solution exists NoSolution exception is thrown).
 
-    :param formula:
-    :return:
+    :param formula: CNF formula;
+    :return: dict{variable: its boolean value}.
     """
     top_order = deque()
     visited = defaultdict(int)

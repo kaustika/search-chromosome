@@ -1,4 +1,5 @@
 from collections import defaultdict
+import os
 
 
 def read_graph_from_file(file_name):
@@ -16,3 +17,15 @@ def read_graph_from_file(file_name):
             x, *y = line.split()
             adj_list[int(x)] = [int(v) for v in y]
     return adj_list
+
+
+def abspath(filename, file):
+    """
+    Use instead of os.path.abspath() in test
+    cases to call pytest from terminal.
+
+    :param filename: name of the file;
+    :param file: pass __file__ here.
+    :return: -
+    """
+    return os.path.join(os.path.dirname(os.path.realpath(file)), filename)

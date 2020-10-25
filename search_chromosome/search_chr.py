@@ -1,5 +1,6 @@
-from search_chromosome.sat.sat_solver import Input, solve_2_sat, NoSolution
 from typing import List, Tuple
+
+from search_chromosome.sat.sat_solver import Input, solve_2_sat, NoSolution
 
 
 class SearchChromosomeException(Exception):
@@ -24,11 +25,21 @@ def search_chromosome(
         vars_separated: List[Tuple[int, int]]
 ) -> int:
     """
+    Given a set of conditions a good chromosome should satisfy either returns a
+    number of such a chromosome of throws NoGoodChromosome if it doesn't exist.
 
-    :param vars_on_chr:
-    :param vars_present:
-    :param vars_separated:
-    :return:
+    :param vars_on_chr: list of tuples. i-tuple contains the boundaries of the
+                        chromosome indices where structural variations of the
+                        i-th type were found;
+    :param vars_present: conditions good chromosome should satisfy. Each tuple
+                         consists of a pair of indices - indices of types of
+                         structural variations (one or both of them should be
+                         in the good chromosome);
+    :param vars_separated: conditions good chr. should satisfy. Each tuple
+                           consists of a pair of indices - indices of types of
+                           structural variations(those shouldn't be in the
+                           good chromosome together);
+    :return: number of a good chromosome.
     """
     # construct a formula
     f = Input()
