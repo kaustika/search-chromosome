@@ -3,6 +3,23 @@ from typing import DefaultDict, List, Tuple, Dict
 from search_chromosome.sat.components import find_components, dfs
 
 
+class TwoSatException(Exception):
+    """
+    Base class for other exceptions.
+    """
+    pass
+
+
+class NoSolution(TwoSatException):
+    """
+    Raised when CNF formula has no solution.
+    It happens when x and !x are in the same strongly connected component.
+    """
+    def __init__(self, message="This CNF formula has no solution!"):
+        self.message = message
+        super().__init__(self.message)
+
+
 class Input:
     """
 
@@ -18,7 +35,7 @@ class Input:
         :param line:
         :return:
         """
-        clause = []
+        clause = list()
         for literal in line.split():
             negated = 1 if literal.startswith('!') else 0
             variable = literal[negated:]
@@ -27,7 +44,7 @@ class Input:
                 self.variables.append(variable)
             encoded_literal = self.variable_table[variable] << 1 | negated
             clause.append(encoded_literal)
-        self.clauses.append(tuple(set(clause)))
+        self.clauses.append(tuple(clause))
 
     @classmethod
     def from_file(cls, file):
@@ -37,10 +54,11 @@ class Input:
         :return:
         """
         instance = cls()
-        for line in file:
-            line = line.strip()
-            if len(line) > 0 and not line.startswith('#'):
-                instance.parse_and_add_clause(line)
+        with open(file) as f:
+            for line in f:
+                line = line.strip()
+                if len(line) > 0 and not line.startswith('#'):
+                    instance.parse_and_add_clause(line)
         return instance
 
     def literal_to_string(self, literal):
@@ -126,7 +144,7 @@ def solve_2_sat(formula: Input) -> Dict[str, bool]:
     """
     top_order = deque()
     visited = defaultdict(int)
-    answer, val_values = dict(), dict()
+    answer, var_values = dict(), dict()
 
     graph = graph_by_clauses(formula.clauses)
     components = find_components(graph)
@@ -136,11 +154,14 @@ def solve_2_sat(formula: Input) -> Dict[str, bool]:
         top_order, visited = dfs(condensate, node, visited, top_order)
 
     for component in top_order:
-        for node in content[component]:
+        nodes_of_comp = content[component]
+        for node in nodes_of_comp:
+            if components[negate(node)] == components[node]:
+                raise NoSolution
             answer[node] = True
             answer[negate(node)] = False
 
     for node in answer.keys():
         if not is_negated(node):  # not negated literals go to the answer
-            val_values[formula.literal_to_string(node)] = answer[node]
-    return val_values
+            var_values[formula.literal_to_string(node)] = answer[node]
+    return var_values
